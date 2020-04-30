@@ -147,16 +147,16 @@ public class BCBenchmark {
         int read = 0;
         while ((read = bis.read(in)) != -1) {
             encLen = cipher.processBytes(in, 0, read, out, 0);
-            fos.write(out, 0, encLen);
+            bos.write(out, 0, encLen);
         }
 
         encLen = cipher.doFinal(out, 0);
-        fos.write(out, 0, encLen);
+        bos.write(out, 0, encLen);
 
-        fis.close();
         bis.close();
-        fos.close();
+        fis.close();
         bos.close();
+        fos.close();
     }
 
     private static void cleanupFile(String path) throws FileSystemException {
