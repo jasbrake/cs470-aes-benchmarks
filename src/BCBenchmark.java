@@ -1,11 +1,9 @@
 import de.linearbits.subframe.Benchmark;
-import de.linearbits.subframe.analyzer.buffered.BufferedCountAnalyzer;
-import de.linearbits.subframe.analyzer.buffered.BufferedStandardDeviationAnalyzer;
+import de.linearbits.subframe.analyzer.ValueBuffer;
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
-import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.util.encoders.Hex;
@@ -21,9 +19,7 @@ public class BCBenchmark {
     public static void main(String[] args) throws InvalidCipherTextException, IOException {
         Benchmark benchmark = new Benchmark(new String[] {"Key Size", "Method", "Data Size" });
         int time = benchmark.addMeasure("Time");
-
-        benchmark.addAnalyzer(time, new BufferedStandardDeviationAnalyzer());
-        benchmark.addAnalyzer(time, new BufferedCountAnalyzer());
+        benchmark.addAnalyzer(time, new ValueBuffer());
 
         // warmup
         System.out.println("Warming up...");
