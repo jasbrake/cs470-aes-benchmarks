@@ -47,6 +47,6 @@ public class RijndaelBenchmark {
 
     public static void main(String[] args) throws Exception {
         RijndaelCrypt(true, key128, iv,"data256.bin","data256.enc");
-        RijndaelCrypt(true, key128, iv,"data256.enc","data256.dec");
+        RijndaelCrypt(false, key128, iv,"data256.enc","data256.dec");
     }
 }
