@@ -1,4 +1,5 @@
 import de.linearbits.subframe.Benchmark;
+import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -122,7 +123,7 @@ public class BCBenchmark {
         AESEngine engine = new AESEngine();
         // PaddedBufferedBlockCipher Uses PKCS7 padding by default.
         // We need padding since our input file may not be a multiple of AES Block size (16 bytes).
-        PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(engine));
+        BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(engine));
         ParametersWithIV params = new ParametersWithIV(new KeyParameter(key), iv);
         cipher.init(encrypt, params);
 
