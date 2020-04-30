@@ -32,9 +32,9 @@ public class RijndaelBenchmark {
         } else {
             while ((read = bis.read(in)) != -1) {
                 if (read != Rijndael_Algorithm.blockSize()) throw new Exception("file is not a multiple of BLOCK_SIZE");
-                feedback = Arrays.copyOf(in, in.length);
                 byte[] out = Rijndael_Algorithm.blockDecrypt(in, 0, roundKeys);
                 for (int j = 0; j < 16; j++) in[j] = (byte) (out[j] ^ feedback[j]); // CBC feedback
+                feedback = Arrays.copyOf(in, in.length);
                 bos.write(out);
             }
         }
