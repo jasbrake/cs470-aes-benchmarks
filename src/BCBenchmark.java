@@ -1,4 +1,7 @@
 import de.linearbits.subframe.Benchmark;
+import de.linearbits.subframe.analyzer.buffered.BufferedCountAnalyzer;
+import de.linearbits.subframe.analyzer.buffered.BufferedStandardDeviationAnalyzer;
+import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -16,8 +19,11 @@ public class BCBenchmark {
     final static byte[] key128 = Hex.decode("48404D635166546A576E5A7234753778");
 
     public static void main(String[] args) throws InvalidCipherTextException, IOException {
-        Benchmark benchmark = new Benchmark("Key Size", "Method", "Data Size");
+        Benchmark benchmark = new Benchmark(new String[] {"Key Size", "Method", "Data Size" });
         int time = benchmark.addMeasure("Time");
+
+        benchmark.addAnalyzer(time, new BufferedStandardDeviationAnalyzer());
+        benchmark.addAnalyzer(time, new BufferedCountAnalyzer());
 
         // warmup
         System.out.println("Warming up...");
@@ -122,7 +128,7 @@ public class BCBenchmark {
         AESEngine engine = new AESEngine();
         // PaddedBufferedBlockCipher Uses PKCS7 padding by default.
         // We need padding since our input file may not be a multiple of AES Block size (16 bytes).
-        PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(engine));
+        BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(engine));
         ParametersWithIV params = new ParametersWithIV(new KeyParameter(key), iv);
         cipher.init(encrypt, params);
 
