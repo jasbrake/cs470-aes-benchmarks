@@ -1,3 +1,4 @@
+import de.linearbits.subframe.Benchmark;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -7,6 +8,7 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.*;
+import java.nio.file.FileSystemException;
 
 public class BCBenchmark {
     final static byte[] iv = Hex.decode("2B4D6251655468576D5A713474367739");
@@ -14,10 +16,93 @@ public class BCBenchmark {
     final static byte[] key128 = Hex.decode("48404D635166546A576E5A7234753778");
 
     public static void main(String[] args) throws InvalidCipherTextException, IOException {
-        BCCrypt(true, key128, iv, "bbb.mp4", "bbb_bc_128.bin");
-        BCCrypt(false, key128, iv, "bbb_bc_128.bin", "bbb_bc_128.mp4");
-        BCCrypt(true, key256, iv, "bbb.mp4", "bbb_bc_256.bin");
-        BCCrypt(false, key256, iv, "bbb_bc_256.bin", "bbb_bc_256.mp4");
+        Benchmark benchmark = new Benchmark("Key Size", "Method", "Data Size");
+        int time = benchmark.addMeasure("Time");
+
+        // warmup
+        System.out.println("Warming up...");
+        BCCrypt(true, key256, iv, "data512.bin", "data512.enc");
+        cleanupFile("data512.enc");
+
+        System.out.println("ENCRYPT - Key: 128 bits, Data: 256 MB");
+        benchmark.addRun("128", "Encrypt", "256");
+        benchmark.startTimer(time);
+        BCCrypt(true, key128, iv, "data256.bin", "data256.enc");
+        benchmark.addStopTimer(time);
+        benchmark.addRun("128", "Decrypt", "256");
+        System.out.println("DECRYPT - Key: 128 bits, Data: 256 MB");
+        benchmark.startTimer(time);
+        BCCrypt(false, key128, iv, "data256.enc", "data256.dec");
+        benchmark.addStopTimer(time);
+        cleanupFile("data256.enc");
+        cleanupFile("data256.dec");
+
+        System.out.println("ENCRYPT - Key: 128 bits, Data: 512 MB");
+        benchmark.addRun("128", "Encrypt", "512");
+        benchmark.startTimer(time);
+        BCCrypt(true, key128, iv, "data512.bin", "data512.enc");
+        benchmark.addStopTimer(time);
+        benchmark.addRun("128", "Decrypt", "512");
+        System.out.println("DECRYPT - Key: 128 bits, Data: 512 MB");
+        benchmark.startTimer(time);
+        BCCrypt(false, key128, iv, "data512.enc", "data512.dec");
+        benchmark.addStopTimer(time);
+        cleanupFile("data512.enc");
+        cleanupFile("data512.dec");
+
+        System.out.println("ENCRYPT - Key: 128 bits, Data: 1024 MB");
+        benchmark.addRun("128", "Encrypt", "1024");
+        benchmark.startTimer(time);
+        BCCrypt(true, key128, iv, "data1024.bin", "data1024.enc");
+        benchmark.addStopTimer(time);
+        benchmark.addRun("128", "Decrypt", "1024");
+        System.out.println("DECRYPT - Key: 128 bits, Data: 1024 MB");
+        benchmark.startTimer(time);
+        BCCrypt(false, key128, iv, "data1024.enc", "data1024.dec");
+        benchmark.addStopTimer(time);
+        cleanupFile("data1024.enc");
+        cleanupFile("data1024.dec");
+
+        System.out.println("ENCRYPT - Key: 256 bits, Data: 256 MB");
+        benchmark.addRun("256", "Encrypt", "256");
+        benchmark.startTimer(time);
+        BCCrypt(true, key256, iv, "data256.bin", "data256.enc");
+        benchmark.addStopTimer(time);
+        benchmark.addRun("256", "Decrypt", "256");
+        System.out.println("DECRYPT - Key: 256 bits, Data: 256 MB");
+        benchmark.startTimer(time);
+        BCCrypt(false, key256, iv, "data256.enc", "data256.dec");
+        benchmark.addStopTimer(time);
+        cleanupFile("data256.enc");
+        cleanupFile("data256.dec");
+
+        System.out.println("ENCRYPT - Key: 256 bits, Data: 512 MB");
+        benchmark.addRun("256", "Encrypt", "512");
+        benchmark.startTimer(time);
+        BCCrypt(true, key256, iv, "data512.bin", "data512.enc");
+        benchmark.addStopTimer(time);
+        benchmark.addRun("256", "Decrypt", "512");
+        System.out.println("DECRYPT - Key: 256 bits, Data: 512 MB");
+        benchmark.startTimer(time);
+        BCCrypt(false, key256, iv, "data512.enc", "data512.dec");
+        benchmark.addStopTimer(time);
+        cleanupFile("data512.enc");
+        cleanupFile("data512.dec");
+
+        System.out.println("ENCRYPT - Key: 256 bits, Data: 1024 MB");
+        benchmark.addRun("256", "Encrypt", "1024");
+        benchmark.startTimer(time);
+        BCCrypt(true, key256, iv, "data1024.bin", "data1024.enc");
+        benchmark.addStopTimer(time);
+        benchmark.addRun("256", "Decrypt", "1024");
+        System.out.println("DECRYPT - Key: 256 bits, Data: 1024 MB");
+        benchmark.startTimer(time);
+        BCCrypt(false, key256, iv, "data1024.enc", "data1024.dec");
+        benchmark.addStopTimer(time);
+        cleanupFile("data1024.enc");
+        cleanupFile("data1024.dec");
+
+        benchmark.getResults().write(new File("bc_results.csv"));
     }
 
     /**
@@ -66,5 +151,11 @@ public class BCBenchmark {
         bis.close();
         fos.close();
         bos.close();
+    }
+
+    private static void cleanupFile(String path) throws FileSystemException {
+        File f = new File(path);
+        if (!f.delete())
+            throw new FileSystemException("could not delete " + f.getAbsolutePath());
     }
 }
