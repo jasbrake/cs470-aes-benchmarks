@@ -1,1 +1,1 @@
-# cs470 AES Benchmarks
+# JMU CS470 AES Benchmarks
