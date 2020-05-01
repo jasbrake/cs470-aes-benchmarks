@@ -17,6 +17,9 @@ public class BCBenchmark {
     final static byte[] key128 = Hex.decode("48404D635166546A576E5A7234753778");
 
     public static void main(String[] args) throws InvalidCipherTextException, IOException {
+        if (args.length != 1) {
+            System.out.println("Invalid number of arguments. Please pass a string for the benchmark output file.");
+        }
         Benchmark benchmark = new Benchmark(new String[] {"Key Size", "Method", "Data Size" });
         int time = benchmark.addMeasure("Time");
         benchmark.addAnalyzer(time, new ValueBuffer());
@@ -104,7 +107,7 @@ public class BCBenchmark {
         cleanupFile("data1024.enc");
         cleanupFile("data1024.dec");
 
-        benchmark.getResults().write(new File("bc_results.csv"));
+        benchmark.getResults().write(new File(args[0]));
     }
 
     /**
