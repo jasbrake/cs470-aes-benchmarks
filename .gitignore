@@ -1,7 +1,5 @@
 out/
 .idea/
-*.mp4
 *.bin
 *.enc
 *.dec
-*.csv
