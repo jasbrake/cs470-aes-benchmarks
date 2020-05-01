@@ -111,8 +111,7 @@ public class BCBenchmark {
     }
 
     /**
-     * Encrypt or decrypt the input file to the output file. Uses BouncyCastle library with AES CBC mode and PKCS7
-     * padding.
+     * Encrypt or decrypt the input file to the output file. Uses BouncyCastle library with AES CBC mode and no padding.
      *
      * @param encrypt whether to encrypt or decrypt
      * @param key the AES key
@@ -125,8 +124,6 @@ public class BCBenchmark {
     public static void BCCrypt(boolean encrypt, byte[] key, byte[] iv, String inputFile, String outputFile)
             throws IOException, InvalidCipherTextException {
         AESEngine engine = new AESEngine();
-        // PaddedBufferedBlockCipher Uses PKCS7 padding by default.
-        // We need padding since our input file may not be a multiple of AES Block size (16 bytes).
         BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(engine));
         ParametersWithIV params = new ParametersWithIV(new KeyParameter(key), iv);
         cipher.init(encrypt, params);
